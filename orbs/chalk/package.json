@@ -1,0 +1,12 @@
+{
+  "name": "@aurb/chalk",
+  "version": "1.0.0",
+  "description": "Monochrome silk. Composed and exact.",
+  "author": "chalktalk",
+  "license": "SEE LICENSE IN LICENSE",
+  "keywords": [
+    "aurb",
+    "orb"
+  ],
+  "aurb": {}
+}

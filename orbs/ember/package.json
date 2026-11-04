@@ -1,0 +1,12 @@
+{
+  "name": "@aurb/ember",
+  "version": "1.0.0",
+  "description": "Molten and heavy. It glows from within.",
+  "author": "chalktalk",
+  "license": "SEE LICENSE IN LICENSE",
+  "keywords": [
+    "aurb",
+    "orb"
+  ],
+  "aurb": {}
+}

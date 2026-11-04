@@ -1,0 +1,14 @@
+{
+  "name": "@aurb/mercury",
+  "version": "1.0.0",
+  "description": "A drop of liquid silver. It weaves itself into a knot to work, turns to gold when it's done, and tarnishes when it fails.",
+  "author": "chalktalk",
+  "license": "SEE LICENSE IN LICENSE",
+  "keywords": [
+    "aurb",
+    "orb"
+  ],
+  "aurb": {
+    "fade": "rest"
+  }
+}

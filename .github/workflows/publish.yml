@@ -1,0 +1,23 @@
+# Every merge to main: publish changed orbs to npm as @aurb/<name>, then the list as @aurb/index.
+# jsDelivr serves them from npm. Needs an npm automation token as the NPM_TOKEN secret.
+name: Publish
+on:
+  push:
+    branches: [main]
+    paths: ["orbs/**", "scripts/publish.mjs", "LICENSE"]
+  workflow_dispatch:
+permissions:
+  contents: read
+  id-token: write # npm provenance: each package links back to the commit that built it
+concurrency: publish
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, registry-url: "https://registry.npmjs.org" }
+      - run: npx -y aurb@latest check orbs/*
+      - run: node scripts/publish.mjs
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

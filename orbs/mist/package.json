@@ -1,0 +1,12 @@
+{
+  "name": "@aurb/mist",
+  "version": "1.0.0",
+  "description": "Colour bleeding through air, like watercolour.",
+  "author": "chalktalk",
+  "license": "SEE LICENSE IN LICENSE",
+  "keywords": [
+    "aurb",
+    "orb"
+  ],
+  "aurb": {}
+}

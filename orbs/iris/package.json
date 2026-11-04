@@ -1,0 +1,12 @@
+{
+  "name": "@aurb/iris",
+  "version": "1.0.0",
+  "description": "Tight violet folds that turn like petals.",
+  "author": "chalktalk",
+  "license": "SEE LICENSE IN LICENSE",
+  "keywords": [
+    "aurb",
+    "orb"
+  ],
+  "aurb": {}
+}

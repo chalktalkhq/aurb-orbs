@@ -1,0 +1,12 @@
+{
+  "name": "@aurb/aurora",
+  "version": "1.0.0",
+  "description": "Violet into cyan. Fluid, always folding.",
+  "author": "chalktalk",
+  "license": "SEE LICENSE IN LICENSE",
+  "keywords": [
+    "aurb",
+    "orb"
+  ],
+  "aurb": {}
+}

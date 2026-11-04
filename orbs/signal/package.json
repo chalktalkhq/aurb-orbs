@@ -1,0 +1,12 @@
+{
+  "name": "@aurb/signal",
+  "version": "1.0.0",
+  "description": "A body of dots trying to get out. Every state moves its own way.",
+  "author": "chalktalk",
+  "license": "SEE LICENSE IN LICENSE",
+  "keywords": [
+    "aurb",
+    "orb"
+  ],
+  "aurb": {}
+}
