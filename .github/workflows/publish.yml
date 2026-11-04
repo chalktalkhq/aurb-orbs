@@ -1,6 +1,6 @@
-# Every merge to main: publish the list as @aurb/index, which the site and npx aurb read. The npm token only ever
-# publishes that list, built here from orbs.json; it never touches anyone's orb. Needs an npm automation token for the
-# @aurb org as the NPM_TOKEN secret.
+# Every merge to main: publish the list as @aurb/index, which the site and npx aurb read, built here from orbs.json.
+# No token: npm trusts this workflow through Trusted Publishing, set on @aurb/index only (npmjs.com, Settings,
+# Trusted Publisher: GitHub Actions, chalktalkhq/aurb-orbs, publish.yml), so it can publish the list and nothing else.
 name: Publish
 on:
   push:
@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
-  id-token: write # npm provenance: the index links back to the commit that built it
+  id-token: write # Trusted Publishing and provenance: npm checks this run's identity, and the index links back to it
 concurrency: publish
 jobs:
   publish:
@@ -18,6 +18,5 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 22, registry-url: "https://registry.npmjs.org" }
+      - run: npm install -g npm@11 # Trusted Publishing needs 11.5.1 or later
       - run: node scripts/index.mjs
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
