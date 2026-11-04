@@ -27,6 +27,7 @@ function validate(list) {
   const problems = [], seen = new Set();
   if (!Array.isArray(list)) die("orbs.json must be a list");
   for (const o of list) {
+    if (!o || typeof o !== "object" || Array.isArray(o)) { problems.push(`${JSON.stringify(o)}: every entry is an object`); continue; }
     const at = `"${o.name}"`;
     if (!/^[a-z][a-z0-9-]{1,30}$/.test(o.name ?? "")) problems.push(`${at}: a name is lowercase letters, digits and -`);
     if (["index", "player"].includes(o.name)) problems.push(`${at} can't be an orb's name: @aurb/${o.name} is taken by aurb itself`);
@@ -50,8 +51,9 @@ const list = validate(JSON.parse(fs.readFileSync("orbs.json", "utf8")));
 
 if (args.includes("--changed")) {
   const base = args[args.indexOf("--changed") + 1];
+  if (!base || base.startsWith("--")) die("--changed needs a git ref to compare with, such as origin/main");
   let before = [];
-  try { before = JSON.parse(execFileSync("git", ["show", `${base}:orbs.json`], { encoding: "utf8" })); } catch {}
+  try { before = JSON.parse(execFileSync("git", ["show", `${base}:orbs.json`], { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] })); } catch {}
   const old = new Set(before.filter((o) => o.package).map(ref));
   for (const o of list) if (o.package && !old.has(ref(o))) console.log(ref(o));
   process.exit(0);
@@ -76,7 +78,8 @@ for (const o of list) {
   if (!m) die(`${o.name}: couldn't load ${url}${o.package ? "" : ". Publish it first: npx @aurb/player publish <its folder>"}`);
   if (m.name !== o.name) die(`${o.name}: the package's manifest says it's "${m.name}"`);
   const themes = m.themes ?? ["dark", "light"];
-  if (!Array.isArray(m.sizes) || !themes.length) die(`${o.name}: its manifest has no sizes or themes`);
+  if (!Array.isArray(m.sizes) || !Array.isArray(themes) || !themes.length) die(`${o.name}: its manifest has no sizes or themes`);
+  if (o.fade === "rest" && !m.rest) die(`${o.name}: it's listed with fade "rest", but its manifest has no rest`);
   index.push({ ...o, sizes: m.sizes, themes });
 }
 
@@ -90,10 +93,15 @@ if (now?.["aurb.hash"] === hash) { console.log(`@aurb/index@${now.version} alrea
 const version = now?.version ? now.version.replace(/\d+$/, (n) => +n + 1) : "1.0.0";
 const dir = fs.mkdtempSync(path.join(os.tmpdir(), "aurb-index-"));
 fs.writeFileSync(path.join(dir, "index.json"), body);
-fs.writeFileSync(path.join(dir, "package.json"), JSON.stringify({ name: "@aurb/index", version, description: "Every listed aurb orb: name, description, author, and where it lives.", license: "MIT", aurb: { hash } }, null, 2));
+// repository is what provenance checks this run against, so it must name this repo.
+fs.writeFileSync(path.join(dir, "package.json"), JSON.stringify({ name: "@aurb/index", version, description: "Every listed aurb orb: name, description, author, and where it lives.", license: "MIT", repository: { type: "git", url: "git+https://github.com/chalktalkhq/aurb-orbs.git" }, aurb: { hash } }, null, 2));
 console.log(`${dry ? "Would publish" : "Publishing"} @aurb/index@${version}: ${index.length} orbs`);
 if (!dry) {
-  if (npmTalk("publish", dir, "--access", "public") !== 0) die("npm couldn't publish @aurb/index: see its message above. Not logged in? Run npm login");
+  // In GitHub Actions with id-token: write, the index links back to the run that built it, as @aurb/player does.
+  const provenance = process.env.GITHUB_ACTIONS && process.env.ACTIONS_ID_TOKEN_REQUEST_URL ? ["--provenance"] : [];
+  const status = npmTalk("publish", dir, "--access", "public", ...provenance);
+  fs.rmSync(dir, { recursive: true, force: true });
+  if (status !== 0) die("npm couldn't publish @aurb/index: see its message above. Not logged in? Run npm login");
   // The 1.x range is cached for up to 7 days; ask jsDelivr to drop it so the new list shows at once. Best effort.
   await fetch(`https://purge.jsdelivr.net/npm/@aurb/index@1/index.json`).catch(() => {});
 }
