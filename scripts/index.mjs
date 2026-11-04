@@ -6,7 +6,7 @@
 //
 // Our own orbs are listed by name and are the @aurb/<name> packages. A community orb stays in its maker's package and
 // is listed at the exact version that was reviewed, so an update reaches nobody until its new version is listed.
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import fs from "node:fs";
 import os from "node:os";
@@ -15,7 +15,12 @@ import path from "node:path";
 const NPM = "https://cdn.jsdelivr.net/npm";
 const args = process.argv.slice(2);
 const dry = args.includes("--dry-run");
-const npm = (...a) => execFileSync("npm", a, { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"], shell: process.platform === "win32" }).trim();
+// npm, with arguments that survive a Windows shell. A publish talks to you directly, so npm can open its sign-in page
+// or ask for a 2FA code.
+const win = process.platform === "win32";
+const quote = (a) => (win ? a.map((x) => (/[\s"&|<>^]/.test(x) ? `"${x.replace(/"/g, '\\"')}"` : x)) : a);
+const npm = (...a) => execFileSync("npm", quote(a), { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"], shell: win }).trim();
+const npmTalk = (...a) => spawnSync("npm", quote(a), { stdio: "inherit", shell: win }).status;
 const die = (msg) => { console.error(`✕ ${msg}`); process.exit(1); };
 
 function validate(list) {
@@ -87,7 +92,7 @@ fs.writeFileSync(path.join(dir, "index.json"), body);
 fs.writeFileSync(path.join(dir, "package.json"), JSON.stringify({ name: "@aurb/index", version, description: "Every listed aurb orb: name, description, author, and where it lives.", license: "MIT", aurb: { hash } }, null, 2));
 console.log(`${dry ? "Would publish" : "Publishing"} @aurb/index@${version}: ${index.length} orbs`);
 if (!dry) {
-  npm("publish", dir, "--access", "public", ...(process.env.CI ? ["--provenance"] : []));
+  if (npmTalk("publish", dir, "--access", "public") !== 0) die("npm couldn't publish @aurb/index: see its message above. Not logged in? Run npm login");
   // The 1.x range is cached for up to 7 days; ask jsDelivr to drop it so the new list shows at once. Best effort.
   await fetch(`https://purge.jsdelivr.net/npm/@aurb/index@1/index.json`).catch(() => {});
 }
