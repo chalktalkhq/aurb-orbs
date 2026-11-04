@@ -1,0 +1,35 @@
+name: Submit an orb
+description: List your published orb on the site and in npx @aurb/player.
+title: "Orb: "
+labels: [submission]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Publish your orb first with `npx @aurb/player publish`. A check runs on your package as soon as you submit, and replies here.
+        To submit an update, open a new one with the new version.
+  - type: input
+    id: package
+    attributes:
+      label: npm package
+      placeholder: aurb-orb-nebula
+    validations: { required: true }
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: The exact version to list. Only this version is given to users until you submit another.
+      placeholder: 1.0.0
+    validations: { required: true }
+  - type: textarea
+    id: about
+    attributes:
+      label: About it
+      description: Anything we should know. The name and description come from your package.
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Yours to share
+      options:
+        - label: I made this orb, or have the right to share it, under the licence in its package.
+          required: true

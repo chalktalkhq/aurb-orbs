@@ -1,14 +1,16 @@
-# Every merge to main: publish changed orbs to npm as @aurb/<name>, then the list as @aurb/index.
-# jsDelivr serves them from npm. Needs an npm automation token as the NPM_TOKEN secret.
+# Every merge to main: publish the list as @aurb/index, which the site and npx @aurb/player read, built here from orbs.json.
+# npm auth is the NPM_TOKEN secret, an npm granular access token that can publish @aurb/index. To move to trusted
+# publishing (no stored token), set this workflow as @aurb/index's trusted publisher on npmjs.com (GitHub Actions,
+# chalktalkhq/aurb-orbs, publish.yml), then delete the secret: npm uses this run's identity when it can.
 name: Publish
 on:
   push:
     branches: [main]
-    paths: ["orbs/**", "scripts/publish.mjs", "LICENSE"]
+    paths: ["orbs.json", "scripts/index.mjs"]
   workflow_dispatch:
 permissions:
   contents: read
-  id-token: write # npm provenance: each package links back to the commit that built it
+  id-token: write # Trusted Publishing and provenance: npm checks this run's identity, and the index links back to it
 concurrency: publish
 jobs:
   publish:
@@ -17,7 +19,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 22, registry-url: "https://registry.npmjs.org" }
-      - run: npx -y github:chalktalkhq/aurb check orbs/*
-      - run: node scripts/publish.mjs
+      - run: npm install -g npm@11 # Trusted Publishing needs 11.5.1 or later
+      - run: node scripts/index.mjs
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

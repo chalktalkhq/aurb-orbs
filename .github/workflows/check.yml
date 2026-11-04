@@ -1,16 +1,48 @@
-# Every pull request: the orbs it touches must pass `npx aurb check`, the same command contributors run locally.
+# A submission issue: check the package it names, and reply with the result and a preview command.
+# A pull request to the list: check orbs.json, then every community package it adds or moves to a new version.
+# Nothing here has an npm token, and no submitted code runs: the check only downloads files from jsDelivr.
 name: Check
-on: pull_request
+on:
+  issues:
+    types: [opened, edited, reopened]
+  pull_request:
+    paths: ["orbs.json", "scripts/index.mjs"]
+permissions:
+  contents: read
 jobs:
-  check:
+  submission:
+    if: github.event_name == 'issues' && contains(github.event.issue.labels.*.name, 'submission')
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: node scripts/submission.mjs
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+      - run: gh issue comment "$NUMBER" --body-file comment.md
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NUMBER: ${{ github.event.issue.number }}
+  list:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
         with: { fetch-depth: 0 }
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
-      - name: Check changed orbs
+      - name: Check the list and every changed package
+        env:
+          BASE: origin/${{ github.base_ref }}
         run: |
-          dirs=$(git diff --name-only origin/${{ github.base_ref }}...HEAD -- orbs | cut -d/ -f1-2 | sort -u | while read d; do [ -d "$d" ] && echo "$d"; done)
-          if [ -z "$dirs" ]; then echo "No orbs changed."; exit 0; fi
-          npx -y github:chalktalkhq/aurb check $dirs
+          refs=$(node scripts/index.mjs --changed "$BASE")
+          if [ -z "$refs" ]; then echo "No community packages changed."; exit 0; fi
+          # Each ref is npm:<package>@<x.y.z>, validated by index.mjs, so splitting on spaces is safe.
+          { echo "Preview:"; for r in $refs; do echo "- \`npx @aurb/player preview $r\`"; done; } >> "$GITHUB_STEP_SUMMARY"
+          npx -y github:chalktalkhq/aurb check $refs
