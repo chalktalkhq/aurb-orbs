@@ -1,14 +1,14 @@
 # aurb orbs
 
-The list of orbs for [aurb](https://github.com/chalktalkhq/aurb): what shows on the site and in `npx aurb`. There are no videos here. Every orb is an npm package that [jsDelivr](https://www.jsdelivr.com) serves, so there is one copy of each, and nothing to host.
+The list of orbs for [aurb](https://github.com/chalktalkhq/aurb): what shows on the site and in `npx @aurb/player`. There are no videos here. Every orb is an npm package that [jsDelivr](https://www.jsdelivr.com) serves, so there is one copy of each, and nothing to host.
 
 ```bash
-npx aurb            # pick one and get its code
-npx aurb list       # see them all
+npx @aurb/player        # pick one and get its code
+npx @aurb/player list   # see them all
 ```
 
 - **Our orbs** are the `@aurb/<name>` packages: `orb="aurora"`. A name follows the latest 1.x; pin one with `orb="aurora@1.0.2"`.
-- **Community orbs** stay in their maker's own package: `orb="npm:aurb-orb-nebula@1.0.2"`. Nobody types that, since `npx aurb` and the site copy it, always at the version we reviewed.
+- **Community orbs** stay in their maker's own package: `orb="npm:aurb-orb-nebula@1.0.2"`. Nobody types that, since `npx @aurb/player` and the site copy it, always at the version we reviewed.
 
 ## Add your orb
 
@@ -23,22 +23,22 @@ Make it however you like: Blender, After Effects, a shader, code. aurb only need
    - every state is the same object, centred and the same size, so a change of state reads as one thing changing.
 2. **Pack them** (needs ffmpeg). This makes the package `aurb-orb-nebula`; add a licence to its `package.json`.
    ```bash
-   npx aurb pack ./loops --name nebula --note "A slow violet cloud with a bright core."
+   npx @aurb/player pack ./loops --name nebula --note "A slow violet cloud with a bright core."
    ```
 3. **Watch every state** in light and dark, at every size:
    ```bash
-   npx aurb preview orbs/nebula
+   npx @aurb/player preview orbs/nebula
    ```
 4. **Publish it** to npm, as your own package. It checks the orb first.
    ```bash
-   npx aurb publish orbs/nebula
+   npx @aurb/player publish orbs/nebula
    ```
    Anyone can use it from now on, as `orb="npm:aurb-orb-nebula@1.0.0"`.
-5. **[Submit it](../../issues/new?template=submit-orb.yml)** to be listed. A check runs on your package and replies with a preview. Once we approve it, it's added to [`orbs.json`](orbs.json) and appears on the site and in `npx aurb` within minutes.
+5. **[Submit it](../../issues/new?template=submit-orb.yml)** to be listed. A check runs on your package and replies with a preview. Once we approve it, it's added to [`orbs.json`](orbs.json) and appears on the site and in `npx @aurb/player` within minutes.
 
 What gets listed: an orb with its own material and its own motion in every state, not a recolour of one already listed. The name must be one lowercase word nobody has taken. Keep each file under 2 MB.
 
-**Updates:** run `npx aurb publish` again, which publishes the next patch version, and submit that version. Until it's approved, everyone keeps the version that was listed.
+**Updates:** run `npx @aurb/player publish` again, which publishes the next patch version, and submit that version. Until it's approved, everyone keeps the version that was listed.
 
 Your package is yours: your name on it, your download counts, your licence. We never copy or republish it. Deleting it later doesn't break sites using it, because jsDelivr keeps every file it has served, and the check fetches all of them.
 
@@ -49,5 +49,5 @@ Our `@aurb` orbs are under the [aurb Orb Licence](LICENSE): use them in anything
 ## Maintainers
 
 - **Approve** a submission by adding its entry to `orbs.json`, with `package` and the exact `version`. For an update, change `version`. To remove an orb, delete its entry: it stops being offered, though sites already using that version keep it.
-- **Our own orbs** are published from the studio with `npx aurb publish <folder>`, then listed by name. Their folder needs this `LICENSE`.
+- **Our own orbs** are published from the studio with `npx @aurb/player publish <folder>`, then listed by name. Their folder needs this `LICENSE`.
 - `.github/workflows/publish.yml` publishes `@aurb/index` from `orbs.json` on every merge to main. There is no token: `@aurb/index` trusts that workflow through npm Trusted Publishing, and nothing else does. `node scripts/index.mjs --dry-run` shows what it would publish.

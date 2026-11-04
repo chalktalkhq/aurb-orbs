@@ -18,8 +18,8 @@ else {
   // The check's own words, kept short and unable to close the code block they're quoted in.
   const out = `${r.stdout}${r.stderr}`.trim().split("\n").slice(-40).join("\n").replace(/`{3,}/g, "` ` `");
   reply = r.status === 0
-    ? `✓ \`${ref}\` passes the check. Every file is now cached on jsDelivr, so this version keeps working whatever happens to the package.\n\nPreview it in every state:\n\n\`\`\`bash\nnpx aurb preview ${ref}\n\`\`\`\n\nA maintainer will review it. Once it's approved, it's added to \`orbs.json\` and appears on the site and in \`npx aurb\` within minutes.`
-    : `✕ \`${ref}\` isn't ready yet:\n\n\`\`\`\n${out}\n\`\`\`\n\nPublish a fixed version with \`npx aurb publish\`, then edit the version here, and the check runs again.`;
+    ? `✓ \`${ref}\` passes the check. Every file is now cached on jsDelivr, so this version keeps working whatever happens to the package.\n\nPreview it in every state:\n\n\`\`\`bash\nnpx @aurb/player preview ${ref}\n\`\`\`\n\nA maintainer will review it. Once it's approved, it's added to \`orbs.json\` and appears on the site and in \`npx @aurb/player\` within minutes.`
+    : `✕ \`${ref}\` isn't ready yet:\n\n\`\`\`\n${out}\n\`\`\`\n\nPublish a fixed version with \`npx @aurb/player publish\`, then edit the version here, and the check runs again.`;
 }
 fs.writeFileSync("comment.md", `${reply}\n`);
 console.log(reply);

@@ -1,4 +1,4 @@
-// The list of orbs, orbs.json, and the @aurb/index package built from it, which the site and `npx aurb` read.
+// The list of orbs, orbs.json, and the @aurb/index package built from it, which the site and `npx @aurb/player` read.
 //
 //   node scripts/index.mjs                  check orbs.json, then publish @aurb/index if the list changed
 //   node scripts/index.mjs --dry-run        the same, publishing nothing
@@ -29,6 +29,7 @@ function validate(list) {
   for (const o of list) {
     const at = `"${o.name}"`;
     if (!/^[a-z][a-z0-9-]{1,30}$/.test(o.name ?? "")) problems.push(`${at}: a name is lowercase letters, digits and -`);
+    if (["index", "player"].includes(o.name)) problems.push(`${at} can't be an orb's name: @aurb/${o.name} is taken by aurb itself`);
     if (seen.has(o.name)) problems.push(`${at} is listed twice`);
     seen.add(o.name);
     if (!o.description || o.description.length > 160) problems.push(`${at}: needs a description of one short sentence`);
@@ -72,7 +73,7 @@ const index = [];
 for (const o of list) {
   const url = o.package ? `${NPM}/${o.package}@${o.version}/manifest.json` : `${NPM}/@aurb/${o.name}@1/manifest.json`;
   const m = await manifest(url);
-  if (!m) die(`${o.name}: couldn't load ${url}${o.package ? "" : ". Publish it first: npx aurb publish <its folder>"}`);
+  if (!m) die(`${o.name}: couldn't load ${url}${o.package ? "" : ". Publish it first: npx @aurb/player publish <its folder>"}`);
   if (m.name !== o.name) die(`${o.name}: the package's manifest says it's "${m.name}"`);
   const themes = m.themes ?? ["dark", "light"];
   if (!Array.isArray(m.sizes) || !themes.length) die(`${o.name}: its manifest has no sizes or themes`);

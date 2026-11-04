@@ -42,4 +42,4 @@ jobs:
           refs=$(node scripts/index.mjs --changed "$BASE")
           if [ -z "$refs" ]; then echo "No community packages changed."; exit 0; fi
           npx -y github:chalktalkhq/aurb check $refs
-          { echo "Preview:"; for r in $refs; do echo "- \`npx aurb preview $r\`"; done; } >> "$GITHUB_STEP_SUMMARY"
+          { echo "Preview:"; for r in $refs; do echo "- \`npx @aurb/player preview $r\`"; done; } >> "$GITHUB_STEP_SUMMARY"

@@ -1,12 +1,12 @@
 name: Submit an orb
-description: List your published orb on the site and in npx aurb.
+description: List your published orb on the site and in npx @aurb/player.
 title: "Orb: "
 labels: [submission]
 body:
   - type: markdown
     attributes:
       value: |
-        Publish your orb first with `npx aurb publish`. A check runs on your package as soon as you submit, and replies here.
+        Publish your orb first with `npx @aurb/player publish`. A check runs on your package as soon as you submit, and replies here.
         To submit an update, open a new one with the new version.
   - type: input
     id: package

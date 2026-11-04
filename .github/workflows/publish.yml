@@ -1,4 +1,4 @@
-# Every merge to main: publish the list as @aurb/index, which the site and npx aurb read, built here from orbs.json.
+# Every merge to main: publish the list as @aurb/index, which the site and npx @aurb/player read, built here from orbs.json.
 # No token: npm trusts this workflow through Trusted Publishing, set on @aurb/index only (npmjs.com, Settings,
 # Trusted Publisher: GitHub Actions, chalktalkhq/aurb-orbs, publish.yml), so it can publish the list and nothing else.
 name: Publish
