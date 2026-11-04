@@ -13,4 +13,4 @@ jobs:
         run: |
           dirs=$(git diff --name-only origin/${{ github.base_ref }}...HEAD -- orbs | cut -d/ -f1-2 | sort -u | while read d; do [ -d "$d" ] && echo "$d"; done)
           if [ -z "$dirs" ]; then echo "No orbs changed."; exit 0; fi
-          npx -y aurb@latest check $dirs
+          npx -y github:chalktalkhq/aurb check $dirs
