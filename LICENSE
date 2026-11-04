@@ -1,18 +1,15 @@
 aurb Orb Licence 1.0
 
-Copyright (c) ChalkTalk and the contributors named in each orb's package.json.
+Copyright (c) ChalkTalk.
 
-"Orb" means the video, image and data files in an orb's folder in this repository, or in the @aurb/<name>
-package published from it.
+"Orb" means the video, image and data files in an @aurb/<name> package on npm. Orbs in other packages, including
+those listed in this repository, are under the licence in their own package.
 
 You may, free of charge and without attribution, use, copy, modify, and display the Orbs in any website,
 application, product or service, including commercial ones, and distribute them as part of it.
 
 You may not sell, license, or redistribute the Orbs on their own, or as part of a collection of orbs, animations,
 or other design assets, whether modified or not. Using an Orb inside your own product is not redistribution.
-
-Contributors: by submitting an Orb, you confirm you have the right to do so, and you license it under these terms
-to ChalkTalk and to everyone who uses it.
 
 THE ORBS ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
 BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY ARISING FROM THE ORBS OR THEIR USE.

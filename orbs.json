@@ -1,0 +1,80 @@
+[
+  {
+    "name": "aurora",
+    "description": "Violet into cyan. Fluid, always folding.",
+    "author": "chalktalk"
+  },
+  {
+    "name": "bubble",
+    "description": "A soap bubble. Its colours are real thin-film light; it ripples, swirls and streams with every state, and pops when something fails.",
+    "author": "chalktalk",
+    "fade": "rest"
+  },
+  {
+    "name": "chalk",
+    "description": "Monochrome silk. Composed and exact.",
+    "author": "chalktalk"
+  },
+  {
+    "name": "ember",
+    "description": "Molten and heavy. It glows from within.",
+    "author": "chalktalk"
+  },
+  {
+    "name": "ferro",
+    "description": "Black chrome ferrofluid with a molten core. It stretches, twists and ripples with every state.",
+    "author": "chalktalk",
+    "fade": "rest"
+  },
+  {
+    "name": "iris",
+    "description": "Tight violet folds that turn like petals.",
+    "author": "chalktalk"
+  },
+  {
+    "name": "lagoon",
+    "description": "Cyan and green water. Long waves, like a tide.",
+    "author": "chalktalk"
+  },
+  {
+    "name": "lattice",
+    "description": "A rigid sphere of dots. Only the light moves.",
+    "author": "chalktalk"
+  },
+  {
+    "name": "mercury",
+    "description": "A drop of liquid silver. It weaves itself into a knot to work, turns to gold when it's done, and tarnishes when it fails.",
+    "author": "chalktalk",
+    "fade": "rest"
+  },
+  {
+    "name": "mist",
+    "description": "Colour bleeding through air, like watercolour.",
+    "author": "chalktalk"
+  },
+  {
+    "name": "moss",
+    "description": "Organic and lumpy. It grows and creeps.",
+    "author": "chalktalk"
+  },
+  {
+    "name": "nova",
+    "description": "Fine and fast. A star that can't sit still.",
+    "author": "chalktalk"
+  },
+  {
+    "name": "pearl",
+    "description": "A clear bubble with one bead of light inside.",
+    "author": "chalktalk"
+  },
+  {
+    "name": "rose",
+    "description": "Pink glass with a heartbeat inside.",
+    "author": "chalktalk"
+  },
+  {
+    "name": "signal",
+    "description": "A body of dots trying to get out. Every state moves its own way.",
+    "author": "chalktalk"
+  }
+]
