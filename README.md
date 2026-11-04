@@ -50,4 +50,4 @@ Our `@aurb` orbs are under the [aurb Orb Licence](LICENSE): use them in anything
 
 - **Approve** a submission by adding its entry to `orbs.json`, with `package` and the exact `version`. For an update, change `version`. To remove an orb, delete its entry: it stops being offered, though sites already using that version keep it.
 - **Our own orbs** are published from the studio with `npx @aurb/player publish <folder>`, then listed by name. Their folder needs this `LICENSE`.
-- `.github/workflows/publish.yml` publishes `@aurb/index` from `orbs.json` on every merge to main. There is no token: `@aurb/index` trusts that workflow through npm Trusted Publishing, and nothing else does. `node scripts/index.mjs --dry-run` shows what it would publish.
+- `.github/workflows/publish.yml` publishes `@aurb/index` from `orbs.json` on every merge to main. It publishes with the `NPM_TOKEN` secret; to drop the token, make the workflow `@aurb/index`'s trusted publisher on npm and delete the secret. `node scripts/index.mjs --dry-run` shows what it would publish.
