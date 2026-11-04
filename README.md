@@ -14,9 +14,10 @@ npx aurb list       # see them all
 
 Make it however you like: Blender, After Effects, a shader, code. aurb only needs the loops.
 
-1. **Make the loops.** One per state and theme, 16 in all:
+1. **Make the loops.** One per state and theme, 16 in all, or 8 for one theme:
    - states: `idle`, `listening`, `thinking`, `working`, `speaking`, `success`, `error`, `asleep`
    - `dark` on pure black and `light` on pure white. The player blends them onto the page, so the background disappears.
+   - one theme is fine: only dark loops makes a dark-only orb. It's labelled as one, and its copied code sets `theme="dark"`.
    - square, at least 320px (640px with `--xl`), seamless, and every one the same length. Ten seconds works well.
    - named `<state>-<theme>`, in any format ffmpeg reads: `idle-dark.mp4`, `idle-light.mov`, and so on.
    - every state is the same object, centred and the same size, so a change of state reads as one thing changing.

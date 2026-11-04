@@ -51,20 +51,34 @@ if (args.includes("--changed")) {
   process.exit(0);
 }
 
-// Each entry carries what the site needs without fetching every orb: its sizes, from the manifest on jsDelivr. This
-// also fails the publish if a listed orb can't be reached.
+// Each entry carries what the site and the CLI need without fetching every orb: its sizes, and its themes, so an orb
+// made in one theme is labelled and its copied code says so. Read from the manifest on jsDelivr, which also fails the
+// publish if a listed orb can't be reached, or isn't the orb it's listed as.
+async function manifest(url) {
+  for (let i = 0; i < 3; i++) {
+    const r = await fetch(url).catch(() => null);
+    if (r?.ok) return r.json().catch(() => null);
+    if (r?.status === 404) return null;
+    await new Promise((res) => setTimeout(res, 2000 * (i + 1)));
+  }
+  return null;
+}
 const index = [];
 for (const o of list) {
   const url = o.package ? `${NPM}/${o.package}@${o.version}/manifest.json` : `${NPM}/@aurb/${o.name}@1/manifest.json`;
-  const r = await fetch(url).catch(() => null);
-  if (!r?.ok) die(`${o.name}: couldn't load ${url}${o.package ? "" : ". Publish it first: npx aurb publish <its folder>"}`);
-  index.push({ ...o, sizes: (await r.json()).sizes });
+  const m = await manifest(url);
+  if (!m) die(`${o.name}: couldn't load ${url}${o.package ? "" : ". Publish it first: npx aurb publish <its folder>"}`);
+  if (m.name !== o.name) die(`${o.name}: the package's manifest says it's "${m.name}"`);
+  const themes = m.themes ?? ["dark", "light"];
+  if (!Array.isArray(m.sizes) || !themes.length) die(`${o.name}: its manifest has no sizes or themes`);
+  index.push({ ...o, sizes: m.sizes, themes });
 }
 
 const body = JSON.stringify(index, null, 2) + "\n";
 const hash = createHash("sha1").update(body).digest("hex").slice(0, 12);
 let now = null;
-try { now = JSON.parse(npm("view", "@aurb/index", "version", "aurb.hash", "--json")); } catch {} // a 404 is the first publish
+try { now = JSON.parse(npm("view", "@aurb/index", "version", "aurb.hash", "--json") || "null"); }
+catch (e) { if (!/E404|404 Not Found/.test(String(e.stderr ?? e.message))) die(`couldn't ask npm about @aurb/index: ${String(e.stderr ?? e.message).trim().split("\n")[0]}`); } // a 404 is the first publish
 if (now?.["aurb.hash"] === hash) { console.log(`@aurb/index@${now.version} already lists these ${index.length} orbs.`); process.exit(0); }
 
 const version = now?.version ? now.version.replace(/\d+$/, (n) => +n + 1) : "1.0.0";
