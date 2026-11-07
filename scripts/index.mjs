@@ -2,6 +2,7 @@
 //
 //   node scripts/index.mjs                  check orbs.json, then publish @aurb/index if the list changed
 //   node scripts/index.mjs --dry-run        the same, publishing nothing
+//   node scripts/index.mjs --readme         print the package's README and stop
 //   node scripts/index.mjs --changed main   print the community packages added or moved to a new version since main
 //
 // Our own orbs are listed by name and are the @aurb/<name> packages. A community orb stays in its maker's package and
@@ -84,7 +85,23 @@ for (const o of list) {
 }
 
 const body = JSON.stringify(index, null, 2) + "\n";
-const hash = createHash("sha1").update(body).digest("hex").slice(0, 12);
+// The package's npm page: every orb, the value that plays it, and how to read the list. Part of the hash, so a change
+// to it republishes like a change to the list does.
+const value = (o) => (o.package ? `npm:${o.package}@${o.version}` : o.name);
+const readme = `# @aurb/index
+
+Every orb listed for [aurb](https://github.com/chalktalkhq/aurb), the 4 KB player for animated orbs in AI products. \`npx @aurb/player\` and the site read this list; to get an orb's code, run \`npx @aurb/player add <name>\`.
+
+| Orb | \`orb=\` | What it is | By |
+|---|---|---|---|
+${index.map((o) => `| [${o.name}](https://www.npmjs.com/package/${o.package ?? `@aurb/${o.name}`}) | \`${value(o)}\` | ${o.description.replace(/\|/g, "\\|")}${o.themes.length === 1 ? ` (${o.themes[0]} only)` : ""} | ${o.author} |`).join("\n")}
+
+## The list
+
+\`https://cdn.jsdelivr.net/npm/@aurb/index@1/index.json\` is an array of orbs, each with \`name\`, \`description\`, \`author\`, \`sizes\` and \`themes\`, plus \`fade: "rest"\` for solid orbs. A community orb also has \`package\` and the exact \`version\` that was reviewed, and plays as \`orb="npm:<package>@<version>"\`. To add yours, see [aurb-orbs](https://github.com/chalktalkhq/aurb-orbs).
+`;
+if (args.includes("--readme")) { console.log(readme); process.exit(0); }
+const hash = createHash("sha1").update(body).update(readme).digest("hex").slice(0, 12);
 let now = null;
 try { now = JSON.parse(npm("view", "@aurb/index", "version", "aurb.hash", "--json") || "null"); }
 catch (e) { if (!/E404|404 Not Found/.test(String(e.stderr ?? e.message))) die(`couldn't ask npm about @aurb/index: ${String(e.stderr ?? e.message).trim().split("\n")[0]}`); } // a 404 is the first publish
@@ -93,6 +110,7 @@ if (now?.["aurb.hash"] === hash) { console.log(`@aurb/index@${now.version} alrea
 const version = now?.version ? now.version.replace(/\d+$/, (n) => +n + 1) : "1.0.0";
 const dir = fs.mkdtempSync(path.join(os.tmpdir(), "aurb-index-"));
 fs.writeFileSync(path.join(dir, "index.json"), body);
+fs.writeFileSync(path.join(dir, "README.md"), readme);
 // repository is what provenance checks this run against, so it must name this repo.
 fs.writeFileSync(path.join(dir, "package.json"), JSON.stringify({ name: "@aurb/index", version, description: "Every listed aurb orb: name, description, author, and where it lives.", license: "MIT", repository: { type: "git", url: "git+https://github.com/chalktalkhq/aurb-orbs.git" }, aurb: { hash } }, null, 2));
 console.log(`${dry ? "Would publish" : "Publishing"} @aurb/index@${version}: ${index.length} orbs`);
