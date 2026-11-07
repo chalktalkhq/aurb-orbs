@@ -1,0 +1,47 @@
+# Manual only: republish our @aurb orbs through the current `npx @aurb/player publish`, for when the publish step itself
+# improves (such as the README it writes). The files are npm's own: each orb is downloaded from npm and published
+# again, so only what publish adds changes, and an orb whose files and README already match publishes nothing.
+name: Republish orbs
+on:
+  workflow_dispatch:
+    inputs:
+      orbs:
+        description: Orb names, space-separated. Empty for every orb of ours in orbs.json.
+        required: false
+        default: ""
+      player:
+        description: The @aurb/player version whose publish runs (latest, or x.y.z).
+        required: false
+        default: latest
+permissions:
+  contents: read
+  id-token: write # provenance: each package links back to this run
+concurrency: publish
+jobs:
+  republish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with: { node-version: 22, registry-url: "https://registry.npmjs.org" }
+      - run: npm install -g npm@11
+      - name: Republish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          ORBS: ${{ inputs.orbs }}
+          PLAYER: ${{ inputs.player }}
+        run: |
+          set -euo pipefail
+          [[ "$PLAYER" =~ ^(latest|[0-9]+\.[0-9]+\.[0-9]+)$ ]] || { echo "player must be latest or x.y.z"; exit 1; }
+          names=${ORBS:-$(node -p 'require("./orbs.json").filter((o) => !o.package).map((o) => o.name).join(" ")')}
+          for name in $names; do
+            [[ "$name" =~ ^[a-z][a-z0-9-]{1,30}$ ]] || { echo "not an orb name: $name"; exit 1; }
+            dir="$RUNNER_TEMP/orbs/$name"
+            mkdir -p "$dir"
+            tgz=$(cd "$RUNNER_TEMP" && npm pack "@aurb/$name@latest" --silent)
+            tar -xzf "$RUNNER_TEMP/$tgz" -C "$dir" --strip-components=1
+            rm "$RUNNER_TEMP/$tgz"
+            npx -y "@aurb/player@$PLAYER" publish "$dir"
+            rm -rf "$dir"
+          done
