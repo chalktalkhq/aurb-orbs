@@ -15,7 +15,7 @@ else if (pkg.startsWith("@aurb/")) reply = "`@aurb` packages are aurb's own. Pub
 else if (!/^\d+\.\d+\.\d+$/.test(version)) reply = "The version needs to be exact, such as `1.0.0`. Edit the issue to fix it, and the check runs again.";
 else {
   const ref = `npm:${pkg}@${version}`;
-  const r = spawnSync("npx", ["-y", "github:chalktalkhq/aurb", "check", ref], { encoding: "utf8", timeout: 8 * 60_000, env: { ...process.env, NO_COLOR: "1" } });
+  const r = spawnSync("npx", ["-y", "@aurb/player@latest", "check", ref], { encoding: "utf8", timeout: 8 * 60_000, env: { ...process.env, NO_COLOR: "1" } });
   if (r.error) { console.error(r.error); process.exit(1); } // our failure, not the package's: no reply
   // The check's own words, kept short and unable to close the code block they're quoted in.
   const out = `${r.stdout ?? ""}${r.stderr ?? ""}`.trim().split("\n").slice(-40).join("\n").replace(/`{3,}/g, "` ` `");
